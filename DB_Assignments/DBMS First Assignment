@@ -1,0 +1,42 @@
+
+use sakila;
+
+/* Find out the PG-13 rated comedy movies. DO NOT use the film_list table. */
+
+SELECT title FROM film
+JOIN film_category ON film.film_id = film_category.film_id
+JOIN category ON film_category.category_id = category.category_id
+WHERE category.name = 'Comedy' AND rating = 'PG-13';
+
+
+ /* Find out the top 3 rented horror movies.  */
+ 
+ select f.title, count(r.rental_id) as rentals from film f join film_category fc 
+ on f.film_id=fc.film_id join category c on fc.category_id=c.category_id 
+ join inventory i on f.film_id=i.film_id join rental r on r.inventory_id=i.inventory_id where c.name='Horror'
+ group by f.film_id order by rentals desc limit 3;
+ 
+
+/* Find out the list of customers from India who have rented sports movies. */
+
+select c.first_name,c.last_name, count(rental_id) as rentals from customer c join address a on c.address_id=a.address_id
+ join city cy on a.city_id=cy.city_id join country cn on cn.country_id=cy.country_id 
+ join rental r on c.customer_id=r.customer_id join inventory i on r.inventory_id=i.inventory_id 
+ join film_category fc on fc.film_id=i.film_id join category ca on 
+ ca.category_id=fc.category_id where cn.country='India' and ca.name='Sports' group by c.customer_id order by rentals;
+ 
+
+/* Find out the list of customers from Canada who have rented “NICK WAHLBERG” movies.  */
+
+select c.first_name,c.last_name ,  count(r.rental_id) as rentals from customer c join rental r on c.customer_id=r.customer_id join inventory i on i.inventory_id=r.inventory_id
+ join film_category fc on i.film_id=fc.film_id join category ca on ca.category_id=fc.category_id 
+ join address a on c.address_id=a.address_id join city ci on ci.city_id=a.city_id join 
+ country co on co.country_id=ci.country_id where ca.name='NICK WAHLBERG' and co.country='Canada' group by c.customer_id order by rentals;
+ 
+
+/* Find out the number of movies in which “SEAN WILLIAMS” acted. */
+
+SELECT COUNT(film_id) FROM film_actor
+WHERE actor_id = (SELECT actor_id FROM actor WHERE first_name = 'SEAN' AND last_name = 'WILLIAMS');
+
+
